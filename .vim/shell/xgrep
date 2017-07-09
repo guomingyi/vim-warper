@@ -1,0 +1,24 @@
+#!/bin/bash
+
+#find ./system/core/ -name "*" |xargs  grep --color -n ELAN
+
+if [ "$1" = "-g" ] ; then
+    source ~/.vim/shell/xfind "$2"
+    exit 0
+fi
+
+
+find . -name .repo -prune -o -name .git -prune -o -name out -prune -o -type f -name "*" -print0 | xargs -0 grep --color -n "$@"
+
+
+exit 0
+
+
+
+
+
+
+
+
+
+

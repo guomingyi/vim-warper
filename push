@@ -1,0 +1,14 @@
+#!/bin/bash
+
+git add --all
+
+git commit -am "<$1>"
+
+git remote add origin https://github.com/guomingyi/vim-warper.git
+
+
+git pull origin master
+
+git push -u origin master
+
+exit 0
