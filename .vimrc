@@ -38,10 +38,10 @@ filetype plugin indent on
 set modelines=0
 set backspace=2 "设置更好的删除
 syntax on "语法高亮
-
+"set noswapfile
 autocmd InsertLeave * se nocul "用浅色高亮当前行
 autocmd InsertEnter * se cul
-
+set paste
 set smartindent "智能对齐
 "set autoindent "自动对齐
 set confirm "在处理未保存或只读文件的时候，弹出确认框
@@ -51,8 +51,9 @@ set shiftwidth=4 "统一缩进为4
 set expandtab "不要用空格替代制表符
 
 set history=50  "历史纪录数
+"set nohlsearch
 set hlsearch
-set incsearch "搜素高亮,搜索逐渐高亮
+"set incsearch "搜素高亮,搜索逐渐高亮
 
 set gdefault "行内替换
 set encoding=utf-8
@@ -66,7 +67,7 @@ set ruler "在编辑过程中，在右下角显示光标位置的状态行
 set laststatus=1  "总是显示状态行
 set showcmd "在状态行显示目前所执行的命令，未完成的指令片段也会显示出来
 set scrolloff=3 "光标移动到buffer的顶部和底部时保持3行的距离
-set showmatch "高亮显示对应的括号
+"set showmatch "高亮显示对应的括号
 set matchtime=5 "对应括号高亮时间(单位是十分之一秒)
 set autowrite "在切换buffer时自动保存当前文件
 set wildmenu  "增强模式中的命令行自动完成操作
@@ -96,8 +97,6 @@ behave mswin
 if has("autocmd")                                                                                                          
   au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif                             
 endif 
-
-
 "##################################################################[auto exec cmds]
 "autocmd VimEnter * TagbarToggle "auto start cmd
 "autocmd VimEnter * WMToggle "auto start cmd
@@ -105,6 +104,11 @@ endif
 "
 "default themes
 autocmd VimEnter * call UserFunctionSwitch(6)
+
+"Open Nerdtree when start vim with no argument
+if argc() == 0 && !exists("s:std_in")
+    autocmd VimEnter * WMToggle
+endif
 "##################################################################[ctags]
 " Press F5 to update make ctags.
 " cd ~/.ctags
@@ -126,6 +130,9 @@ nmap 2 : bn <cr>
 nmap <Leader>1 : bd <cr>
 nmap <Leader>3 : PluginInstall <cr>
 
+nmap 3 : cn <cr>
+nmap 4 : cp <cr>
+
 "行号切换
 map <silent> <Leader><F2> : call UserFunctionSwitch(0) <CR>
 "鼠标切换
@@ -141,13 +148,16 @@ nmap <silent> <F3> : call UserFunctionSwitch(3) <CR>
 nmap <silent> <Leader><F4> : call UserFunctionSwitch(4) <CR>
 
 "file search
-nmap <silent> <F4> : CtrlP <CR>
+nmap <silent> <F4> : exec "CtrlP ." <CR>
 
 "make source tags
 nmap <silent> <F5> : call UserFunctionSwitch(5) <CR>
 
 "themes switch
-nmap <silent> <Leader><F6> : call UserFunctionSwitch(6) <CR>
+nmap <silent> <Leader><F7> : call UserFunctionSwitch(6) <CR>
+
+"miniBuf
+nmap <silent> <Leader><F6> : call UserFunctionSwitch(70) <CR>
 
 "buf exploler
 nmap <silent> <F6> : call UserFunctionSwitch(7) <CR>
@@ -222,16 +232,17 @@ if a:cmd == 4
 endif
 
 if a:cmd == 5
+    echo "Start make source tags.."
     let g:ctags = system("~/.vim/shell/make-ctags.sh " . shellescape(expand('%:h')))
     let execcmd = "set tags=" . g:ctags
     echo execcmd
     exec execcmd
+    echo "done!"
     return
 endif
 
 if a:cmd == 6
 
-    exec 'syntax enable'
     if g:themes_flag == 0
         let g:themes_flag = 1
         exec "colorscheme solarized"
@@ -271,6 +282,12 @@ if a:cmd == 6
     return
 endif
 
+
+if a:cmd == 70
+    exec 'TMiniBufExplorer'
+    return
+endi
+
 if a:cmd == 7
     exec 'ToggleBufExplorer'
     return
@@ -279,7 +296,6 @@ endif
 endfunction
 
 "##################################################################[TlistToggle,NERDTree]
-:set hlsearch " 搜索默认高亮显示
 let NERDTreeQuitOnOpen=1 "打开文件时关闭树
 let NERDTreeShowBookmarks=1 "显示书签
 let Tlist_Show_One_File = 1 " 不同时显示多个文件的 tag ，只显示当前文件的
@@ -323,6 +339,7 @@ endfunction
 "endfunction  
 
 "##################################################################[MiniBufExplorer]
+"let g:default_open_minibufexplorer = 0
 let g:miniBufExplMapWindowNavVim = 1   
 let g:miniBufExplMapWindowNavArrows = 1   
 let g:miniBufExplMapCTabSwitchBufs = 1   
@@ -351,22 +368,20 @@ let g:tagbar_width = 30
 
 "##################################################################[mru]
 set rtp+=~/.vim/bundle/mru
-let MRU_Max_Entries = 1000
-let MRU_Exclude_Files = '^/tmp/.*\|^/var/tmp/.*'  " For Unix
-let MRU_Include_Files = '\.c$\|\.h$'
-let MRU_Window_Height = 8
-"let MRU_Use_Current_Window = 1
-let MRU_Auto_Close = 0
-let MRU_Max_Menu_Entries = 20
+let g:MRU_Max_Entries = 1000
+let g:MRU_Exclude_Files = '^/tmp/.*\|^/var/tmp/.*'  " For Unix
+let g:MRU_Include_Files = '\.c$\|\.h$'
+let g:MRU_Window_Height = 8
+"let g:MRU_Use_Current_Window = 1
+let g:MRU_Auto_Close = 0
+let g:MRU_Max_Menu_Entries = 20
 
 "##################################################################[auto-pairs]
 set runtimepath^=~/.vim/bundle/auto-pairs
 let g:AutoPairsFlyMode = 1
 let g:AutoPairsShortcutBackInsert = '<M-b>'
 set laststatus=2
-
-"##################################################################[nerdcommenter]
-"\cc 注释当前行和选中行  
+"##################################################################[nerdcommenter] "\cc 注释当前行和选中行  
 "\cu 取消注释 
 set rtp+=~/.vim/bundle/nerdcommenter
 let g:NERDSpaceDelims = 1
