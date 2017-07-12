@@ -134,33 +134,34 @@ nmap 3 : cn <cr>
 nmap 4 : cp <cr>
 
 "行号切换
-map <silent> <Leader><F2> : call UserFunctionSwitch(0) <CR>
+map <silent> <F2> : call UserFunctionSwitch(0) <CR>
 "鼠标切换
-nmap <silent> <F2> : call UserFunctionSwitch(1) <CR>
+nmap <silent> <Leader><F2> : call UserFunctionSwitch(1) <CR>
 
 "neadtree
 nmap <silent> <Leader><F3> : call UserFunctionSwitch(2) <CR>
-
 "tagbarlist
 nmap <silent> <F3> : call UserFunctionSwitch(3) <CR>
 
 "mru, file open history record
 nmap <silent> <Leader><F4> : call UserFunctionSwitch(4) <CR>
-
 "file search
 nmap <silent> <F4> : exec "CtrlP ." <CR>
 
 "make source tags
 nmap <silent> <F5> : call UserFunctionSwitch(5) <CR>
 
+"miniBuf
+nmap <silent> <Leader><F6> : call UserFunctionSwitch(70) <CR>
+"buf exploler
+nmap <silent> <F6> : call UserFunctionSwitch(7) <CR>
+
+"quickfix 
+nmap <silent> <F7> : call UserFunctionSwitch(8) <CR>
 "themes switch
 nmap <silent> <Leader><F7> : call UserFunctionSwitch(6) <CR>
 
-"miniBuf
-nmap <silent> <Leader><F6> : call UserFunctionSwitch(70) <CR>
-
-"buf exploler
-nmap <silent> <F6> : call UserFunctionSwitch(7) <CR>
+nmap <silent> <F8> : call UserFunctionSwitch(20) <CR>
 
 "ack search file & symbols
 nmap <Leader>s : Ack <Space>
@@ -179,6 +180,8 @@ let g:window_flag = 1
 let g:MRU_flag = 0
 let g:themes_flag = 1
 let g:ctags = ""
+
+let g:quickfix = 0
 
 function! UserFunctionSwitch(cmd)
 let g:userFuncSwitch = a:cmd
@@ -293,6 +296,23 @@ if a:cmd == 7
     return
 endif
 
+if a:cmd == 8
+    if g:quickfix == 0
+        let g:quickfix = 1
+        exec "cclose"
+    else
+        let g:quickfix = 0
+        exec "copen"
+    endif
+    return
+endi
+
+if a:cmd == 20
+    "call MyTabLine()
+    "echo 'tab:' tab
+    return
+endif
+
 endfunction
 
 "##################################################################[TlistToggle,NERDTree]
@@ -312,10 +332,13 @@ let g:ctrlp_working_path_mode = 'cra'
 let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
 set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.exe,*.tar,*.deb,*~,*.bak,*.ko,*.bin,*.img,*.apk
 
-let g:ctrlp_regexp = 1
+"let g:ctrlp_regexp = 1
+
 let g:ctrlp_use_caching = 1
 let g:ctrlp_cache_dir = '/.cache/ctrlp'
 let g:ctrlp_show_hidden = 0
+
+let g:ctrlp_user_command = 'find %s -type f'
 "##################################################################[winManager]
 let g:NERDTree_title="[NERDTree]"  
 let g:winManagerWindowLayout='NERDTree'
@@ -419,4 +442,34 @@ function! LeaveHandler()
     echo execcmd
     exec execcmd
 endfunction
+
+
+
+function! MyTabLine()
+          let s = ''
+          for i in range(tabpagenr('$'))
+            " select the highlighting
+            if i + 1 == tabpagenr()
+              let s .= '%#TabLineSel#'
+            else
+              let s .= '%#TabLine#'
+            endif
+
+            " set the tab page number (for mouse clicks)
+            let s .= '%' . (i + 1) . 'T'
+
+            " the label is made by MyTabLabel()
+            let s .= ' %{MyTabLabel(' . (i + 1) . ')} '
+          endfor
+        " after the last tab fill with TabLineFill and reset tab page nr
+          let s .= '%#TabLineFill#%T'
+
+          " right-align the label to close the current tab page
+          if tabpagenr('$') > 1
+            let s .= '%=%#TabLine#%999Xclose'
+          endif
+          echo s
+          return s
+endfunction
+
 
