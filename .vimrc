@@ -107,8 +107,10 @@ autocmd VimEnter * call UserFunctionSwitch(6)
 
 "Open Nerdtree when start vim with no argument
 if argc() == 0 && !exists("s:std_in")
-    autocmd VimEnter * WMToggle
+"    autocmd VimEnter * WMToggle
 endif
+
+
 "##################################################################[ctags]
 " Press F5 to update make ctags.
 " cd ~/.ctags
@@ -123,7 +125,16 @@ let settag = "set tags=" . g:Newpwd . "/tags"
 "echo settag
 exec settag
 
-"set tags=~/.ctags/tags
+let g:argc = argc()
+let g:argv = argv(0)
+"echo "argv:" g:argv "argc:" g:argc  
+
+if (expand(g:argv) == expand("clean")) 
+    let g:clean = 1
+    echo "clean all session.vim.."
+    silent :!~/.vim/shell/del.sh
+endif
+
 "##################################################################[key map]
 nmap 1 : bp <cr>
 nmap 2 : bn <cr>
@@ -235,12 +246,14 @@ if a:cmd == 4
 endif
 
 if a:cmd == 5
-    echo "Start make source tags.."
+    echo "Start make tag.."
+    let g:time1 = localtime() 
     let g:ctags = system("~/.vim/shell/make-ctags.sh " . shellescape(expand('%:h')))
     let execcmd = "set tags=" . g:ctags
     echo execcmd
     exec execcmd
-    echo "done!"
+    let g:time2 = localtime()
+    echo "escape time:" (g:time2 - g:time1)"s"
     return
 endif
 
@@ -329,15 +342,22 @@ set rtp+=~/.vim/bundle/ctrlp.vim
 let g:ctrlp_map = '<c-p>'
 let g:ctrlp_cmd = 'CtrlP'
 let g:ctrlp_working_path_mode = 'cra'
-let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
-set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.exe,*.tar,*.deb,*~,*.bak,*.ko,*.bin,*.img,*.apk
 
-"let g:ctrlp_regexp = 1
+let g:ctrlp_custom_ignore = {
+    \ 'dir':  '\v[\/]\.(git|hg|svn|rvm|out|gen)$',
+    \ 'file': '\v\.(exe|so|dll|zip|tar|tar.gz|pyc|a|img|apk|bak|ko|deb|~|swp|tmp|html|jpg|png|bmp|ogg|log|jar)$',
+    \ }
+
+
+set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.exe,*.tar,*.deb,*~,*.bak,*.ko,*.bin,*.img,*.apk,*.jar
+
+let g:ctrlp_regexp = 1
 
 let g:ctrlp_use_caching = 1
-let g:ctrlp_cache_dir = '/.cache/ctrlp'
+let g:ctrlp_cache_dir = '~/.cache/ctrlp'
 let g:ctrlp_show_hidden = 0
 
+let g:ctrlp_clear_cache_on_exit = 0
 let g:ctrlp_user_command = 'find %s -type f'
 "##################################################################[winManager]
 let g:NERDTree_title="[NERDTree]"  
@@ -362,7 +382,7 @@ endfunction
 "endfunction  
 
 "##################################################################[MiniBufExplorer]
-"let g:default_open_minibufexplorer = 0
+let g:default_open_minibufexplorer = 0
 let g:miniBufExplMapWindowNavVim = 1   
 let g:miniBufExplMapWindowNavArrows = 1   
 let g:miniBufExplMapCTabSwitchBufs = 1   
