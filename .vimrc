@@ -87,8 +87,8 @@ set ignorecase "搜索忽略大小写
 set foldmethod=syntax "使用语法高亮定义代码折叠: zc 折叠, zo 展开
 set foldlevelstart=99 "打开文件是默认不折叠代码
 
-set mouse= "鼠标默认值
-set number "显示行号
+"set mouse= "鼠标默认值
+"set number "显示行号
 
 behave mswin 
 
@@ -101,15 +101,20 @@ endif
 "autocmd VimEnter * TagbarToggle "auto start cmd
 "autocmd VimEnter * WMToggle "auto start cmd
 "autocmd VimEnter * NERDTree "auto start cmd
-"
+
 "default themes
 autocmd VimEnter * call UserFunctionSwitch(6)
+
+ " default show line number
+autocmd VimEnter * call UserFunctionSwitch(0)
+
+" default enable mouse
+autocmd VimEnter * call UserFunctionSwitch(1)
 
 "Open Nerdtree when start vim with no argument
 if argc() == 0 && !exists("s:std_in")
 "    autocmd VimEnter * WMToggle
 endif
-
 
 "##################################################################[ctags]
 " Press F5 to update make ctags.
@@ -185,8 +190,8 @@ nmap <Leader>w : w <CR>
 nmap <Leader>rs : call LeaveHandler() <Space> 
 "##################################################################[function]
 let g:userFuncSwitch = 1
-let g:line_number_show = 1
-let g:mouse_enable = 1
+let g:line_number_show = 0
+let g:mouse_enable = 0
 let g:window_flag = 1
 let g:MRU_flag = 0
 let g:themes_flag = 1
@@ -200,11 +205,11 @@ exec ":syntax on"
 
 if a:cmd == 0
     if g:line_number_show == 0
-        set nu
+        exec 'set nu'
         let g:line_number_show = 1
         echo 'Show line number!'
     else
-        set nonu
+        exec 'set nonu'
         let g:line_number_show = 0
     endif
     return
@@ -213,11 +218,11 @@ endif
 if a:cmd == 1
     if g:mouse_enable == 0
         let g:mouse_enable = 1
-        set mouse=a
+        exec 'set mouse=n' 
         echo 'enable mouse'
     else
         let g:mouse_enable = 0 
-        set mouse=
+       exec 'set mouse='
         echo 'disable mouse'
     endif
     return
