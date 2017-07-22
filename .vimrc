@@ -53,7 +53,7 @@ set expandtab "不要用空格替代制表符
 set history=50  "历史纪录数
 "set nohlsearch
 set hlsearch
-"set incsearch "搜素高亮,搜索逐渐高亮
+set incsearch "搜素高亮,搜索逐渐高亮
 
 set gdefault "行内替换
 set encoding=utf-8
@@ -149,6 +149,12 @@ nmap <Leader>3 : PluginInstall <cr>
 nmap 3 : cn <cr>
 nmap 4 : cp <cr>
 
+nmap 5 <C-]>
+
+nmap 6 <C-o>
+
+nmap 7 <C-i>
+
 "行号切换
 map <silent> <F2> : call UserFunctionSwitch(0) <CR>
 "鼠标切换
@@ -174,6 +180,8 @@ nmap <silent> <F6> : call UserFunctionSwitch(7) <CR>
 
 "quickfix 
 nmap <silent> <F7> : call UserFunctionSwitch(8) <CR>
+"nmap <silent> 8 : call UserFunctionSwitch(80) <CR>
+"nmap <silent> 9 : call UserFunctionSwitch(81) <CR>
 "themes switch
 nmap <silent> <Leader><F7> : call UserFunctionSwitch(6) <CR>
 
@@ -184,8 +192,14 @@ nmap <Leader>s : Ack <Space>
 nmap <Leader>f : AckFile <Space>
 nmap <Leader>q : q <CR>
 nmap <Leader>qa : qall <CR>
+
+" quit all & save session.vim.
+nmap <F12> : call UserFunctionSwitch(30) <CR>
 nmap <Leader>wq : wq <CR>
 nmap <Leader>w : w <CR>
+
+nmap <Leader>rn : %s/\r//g <CR> "替换^Ｍ
+
 
 nmap <Leader>rs : call LeaveHandler() <Space> 
 "##################################################################[function]
@@ -323,11 +337,35 @@ if a:cmd == 8
         exec "copen"
     endif
     return
-endi
+endif
+
+if a:cmd == 80
+    if g:quickfix == 1
+        exec "bn"
+    else
+        exec "cn"
+    endif
+    return
+endif
+
+if a:cmd == 81
+    if g:quickfix == 1
+        exec "bp"
+    else
+        exec "cp"
+    endif
+    return
+endif
 
 if a:cmd == 20
     "call MyTabLine()
     "echo 'tab:' tab
+    return
+endif
+
+if a:cmd == 30
+    let g:quit_save = 1
+    exec "qall"
     return
 endif
 
@@ -462,10 +500,14 @@ endif
 
 au VimLeave * call LeaveHandler()
 function! LeaveHandler()
-    let g:path = system("~/.vim/shell/get_path.sh " . shellescape(expand('%:h')))
-    let execcmd = "mks! ". g:path
-    echo execcmd
-    exec execcmd
+    if (g:quit_save == 1) 
+        let g:path = system("~/.vim/shell/get_path.sh " . shellescape(expand('%:h')))
+        let execcmd = "mks! ". g:path
+        echo execcmd
+        exec execcmd
+    else
+        echo "exit but no save session.vim"
+    endif
 endfunction
 
 
