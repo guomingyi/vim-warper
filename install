@@ -1,0 +1,12 @@
+#!/bin/bash
+
+
+echo Config vim ..
+
+rm -rf ~/.vim ~/.vimrc
+
+cp -a .vim ~/.vim
+cp -a .vimrc ~/.vimrc
+
+echo "Done."
+

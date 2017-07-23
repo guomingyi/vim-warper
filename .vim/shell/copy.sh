@@ -10,7 +10,7 @@ tagpath=~/.ctags/${temp//"/"/"_"}
 echo "pwd:$sourcepath,temp:$temp tagpath: $tagpath"
 
 rm -rf ~/.ctags/session.vim
-cp $tagpath/session.vim ~/.ctags/session.vim
+cp -a $tagpath/* ~/.ctags
 
 exit 0
 

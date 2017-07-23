@@ -39,11 +39,12 @@ set modelines=0
 set backspace=2 "设置更好的删除
 syntax on "语法高亮
 "set noswapfile
-autocmd InsertLeave * se nocul "用浅色高亮当前行
-autocmd InsertEnter * se cul
+"autocmd InsertLeave * se nocul "用浅色高亮当前行
+"autocmd InsertEnter * se cul
+set cul
 set paste
 set smartindent "智能对齐
-"set autoindent "自动对齐
+set autoindent "自动对齐
 set confirm "在处理未保存或只读文件的时候，弹出确认框
 set tabstop=4 "tab键的宽度
 set softtabstop=4
@@ -90,12 +91,19 @@ set foldlevelstart=99 "打开文件是默认不折叠代码
 "set mouse= "鼠标默认值
 "set number "显示行号
 
+" 自动切换vim工作目录
+" set autochdir
+" :cd   改变vim的当前工作路径
+" :lcd  改变当前窗口的工作路径
+" :pwd  查看当前的工作路径
+
 behave mswin 
 
-
-"reopening a file                                                                                                                                         
 if has("autocmd")                                                                                                          
-  au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif                             
+    au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif                             
+    au InsertEnter * silent execute "!gconftool-2 --type string --set /apps/gnome-terminal/profiles/Default/cursor_shape ibeam"  
+    au InsertLeave * silent execute "!gconftool-2 --type string --set /apps/gnome-terminal/profiles/Default/cursor_shape block"  
+    au VimLeave * silent execute "!gconftool-2 --type string --set /apps/gnome-terminal/profiles/Default/cursor_shape block" 
 endif 
 "##################################################################[auto exec cmds]
 "autocmd VimEnter * TagbarToggle "auto start cmd
@@ -172,6 +180,8 @@ nmap <silent> <F4> : exec "CtrlP ." <CR>
 
 "make source tags
 nmap <silent> <F5> : call UserFunctionSwitch(5) <CR>
+nmap <silent> <Leader><F5> : call UserFunctionSwitch(51) <CR>
+nmap <silent> <Leader><F9> : exec "cscope add " . g:ctags <space>
 
 "miniBuf
 nmap <silent> <Leader><F6> : call UserFunctionSwitch(70) <CR>
@@ -268,8 +278,21 @@ if a:cmd == 5
     echo "Start make tag.."
     let g:time1 = localtime() 
     let g:ctags = system("~/.vim/shell/make-ctags.sh " . shellescape(expand('%:h')))
-    let execcmd = "set tags=" . g:ctags
-    echo execcmd
+    let execcmd = "set tags+=" . g:ctags
+    exec execcmd
+    let g:time2 = localtime()
+    echo "escape time:" (g:time2 - g:time1)"s"
+    return
+endif
+
+if a:cmd == 51
+    echo "Start make cscope.."
+    let g:time1 = localtime() 
+    let g:ctags = system("~/.vim/shell/cscope.sh " . shellescape(expand('%:p')))
+    let g:cscope = substitute(g:ctags, "^@", "", "g")
+    echo g:cscope
+    let execcmd = "cs add ~/.ctags/cscope.out"
+     " let execcmd = "cscope add " . g:cscope
     exec execcmd
     let g:time2 = localtime()
     echo "escape time:" (g:time2 - g:time1)"s"
@@ -378,6 +401,48 @@ let Tlist_Show_One_File = 1 " 不同时显示多个文件的 tag ，只显示当
 let Tlist_Exit_OnlyWindow = 1 " 如果 taglist 窗口是最后一个窗口，则退出 vim
 let Tlist_Use_Right_Window = 1
 let Tlist_Auto_Open = 0
+"###################################################################[cscope]
+" http://blog.csdn.net/citongke1/article/details/8497244
+
+" 安装：
+" sudo apt-get install cscope
+
+" 创建索引：
+" cscope -Rbq
+" 把需要创建索引的文件类型输入到这个文件
+" find . -type f > cscope.files
+
+" 添加到vim：
+" :cs add ./cscope.out
+
+" 查找函数func：
+" :cs find s func
+
+" vim支持8种cscope的查询功能，如下：
+" s: 查找C语言符号，即查找函数名、宏、枚举值等出现的地方（包括头文件）
+" g: 查找函数、宏、枚举等定义的位置，类似ctags所提供的功能（比如有可能只在头文件处）
+" d: 查找本函数调用的函数
+" c: 查找调用本函数的函数
+" t: 查找指定的字符串
+" e: 查找egrep模式，相当于egrep功能，但查找速度快多了
+" f: 查找并打开文件，类似vim的find功能
+" i: 查找包含本文件的文件
+" 其他功能可输入：help cscope查看
+
+if has("cscope")
+    set csprg=/usr/bin/cscope
+    set csto=1
+    set cst
+    set nocsverb
+    " add any database in current directory
+    if filereadable("cscope.out")
+        cs add cscope.out
+        " else add database pointed to by environment
+    elseif $CSCOPE_DB != ""
+        cs add $CSCOPE_DB
+    endif
+    set csverb
+endif
 
 "##################################################################[Ctrlp]
 set rtp+=~/.vim/bundle/ctrlp.vim
@@ -391,7 +456,6 @@ let g:ctrlp_custom_ignore = {
     \ 'file': '\v\.(exe|so|dll|zip|tar|tar.gz|pyc|a|img|apk|bak|ko|deb|~|swp|tmp|html|jpg|png|bmp|ogg|log|jar)$',
     \ }
 
-
 set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.exe,*.tar,*.deb,*~,*.bak,*.ko,*.bin,*.img,*.apk,*.jar
 
 let g:ctrlp_regexp = 1
@@ -400,8 +464,10 @@ let g:ctrlp_use_caching = 1
 let g:ctrlp_cache_dir = '~/.cache/ctrlp'
 let g:ctrlp_show_hidden = 0
 
-let g:ctrlp_clear_cache_on_exit = 0
 let g:ctrlp_user_command = 'find %s -type f'
+let g:ctrlp_clear_cache_on_exit = 0
+let g:ctrlp_max_depth = 100
+let g:ctrlp_max_files = 5000000
 "##################################################################[winManager]
 let g:NERDTree_title="[NERDTree]"  
 let g:winManagerWindowLayout='NERDTree'
@@ -488,14 +554,16 @@ let g:ack_lhandler = "botright lopen 8"
 let g:ack_qhandler = "botright copen 8"
 
 "##################################################################[resume history]
-
-
 let g:AutoSessionFile = g:Newpwd . "/session.vim"
 if(expand(g:AutoSessionFile) == findfile(expand(g:AutoSessionFile)))
     silent :!~/.vim/shell/copy.sh
     au VimEnter * source ~/.ctags/session.vim
-    "echo 'seession:' g:AutoSessionFile
-    exec ":syntax on"
+endif
+
+let g:AutoSessionFile = g:Newpwd . "/cscope.out"
+if(expand(g:AutoSessionFile) == findfile(expand(g:AutoSessionFile)))
+    " silent :!~/.vim/shell/copy.sh
+    " au VimEnter * source ~/.ctags/session.vim
 endif
 
 au VimLeave * call LeaveHandler()
@@ -509,8 +577,6 @@ function! LeaveHandler()
         echo "exit but no save session.vim"
     endif
 endfunction
-
-
 
 function! MyTabLine()
           let s = ''

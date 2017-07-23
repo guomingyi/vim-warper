@@ -17,6 +17,7 @@ f3    tagbarlist
 f4    Ctrlp,文件模糊搜索
 \f4   MRU,文件打开历史记录,可保存
 f5    make tags,用于查看代码进入函数跳转
+\f5   make cscope, ctags的升级
 f6    Buf exploler,当前文件打开记录
 \f6   miniBufExploler,跟上一个类同
 \f7   themes switch
