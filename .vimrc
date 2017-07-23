@@ -181,7 +181,7 @@ nmap <silent> <F4> : exec "CtrlP ." <CR>
 "make source tags
 nmap <silent> <F5> : call UserFunctionSwitch(5) <CR>
 nmap <silent> <Leader><F5> : call UserFunctionSwitch(51) <CR>
-nmap <silent> <Leader><F9> : exec "cscope add " . g:ctags <space>
+" nmap <silent> <Leader><F9> : exec "cscope add " . g:ctags <space>
 
 "miniBuf
 nmap <silent> <Leader><F6> : call UserFunctionSwitch(70) <CR>
@@ -281,7 +281,7 @@ if a:cmd == 5
     let execcmd = "set tags+=" . g:ctags
     exec execcmd
     let g:time2 = localtime()
-    echo "escape time:" (g:time2 - g:time1)"s"
+    echo execcmd "escape time:" (g:time2 - g:time1)"s"
     return
 endif
 
@@ -291,8 +291,10 @@ if a:cmd == 51
     let g:ctags = system("~/.vim/shell/cscope.sh " . shellescape(expand('%:p')))
     let g:cscope = substitute(g:ctags, "^@", "", "g")
     echo g:cscope
+    echo "CSCOPE_DB:" $CSCOPE_DB 
     let execcmd = "cs add ~/.ctags/cscope.out"
      " let execcmd = "cscope add " . g:cscope
+    cs kill -1
     exec execcmd
     let g:time2 = localtime()
     echo "escape time:" (g:time2 - g:time1)"s"
@@ -560,10 +562,11 @@ if(expand(g:AutoSessionFile) == findfile(expand(g:AutoSessionFile)))
     au VimEnter * source ~/.ctags/session.vim
 endif
 
-let g:AutoSessionFile = g:Newpwd . "/cscope.out"
-if(expand(g:AutoSessionFile) == findfile(expand(g:AutoSessionFile)))
-    " silent :!~/.vim/shell/copy.sh
-    " au VimEnter * source ~/.ctags/session.vim
+let g:AutoCscopeFile = g:Newpwd . "/cscope.out"
+" echo g:AutoCscopeFile
+if(expand(g:AutoCscopeFile) == findfile(expand(g:AutoCscopeFile)))
+    silent :!~/.vim/shell/copy.sh
+    au VimEnter * cs add ~/.ctags/cscope.out
 endif
 
 au VimLeave * call LeaveHandler()
