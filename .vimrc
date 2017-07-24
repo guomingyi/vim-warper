@@ -197,7 +197,7 @@ nmap <silent> <F7> : call UserFunctionSwitch(8) <CR>
 "themes switch
 nmap <silent> <Leader><F7> : call UserFunctionSwitch(6) <CR>
 
-nmap <silent> <F8> : call UserFunctionSwitch(20) <CR>
+nmap <silent> <F8> : call UserFunctionSwitch(50) <CR>
 
 "ack search file & symbols
 nmap <Leader>s : Ack <Space>
@@ -286,10 +286,18 @@ if a:cmd == 5
     echo "Start make tag.."
     let g:time1 = localtime() 
     let g:ctags = system("~/.vim/shell/make-ctags.sh " . shellescape(expand('%:h')))
-    let execcmd = "set tags+=" . g:ctags
-    exec execcmd
+    let g:ctag_execcmd = "set tags+=" . g:ctags
+    exec g:ctag_execcmd
     let g:time2 = localtime()
-    echo execcmd "escape time:" (g:time2 - g:time1)"s"
+    echo g:ctag_execcmd "escape time:" (g:time2 - g:time1)"s"
+    return
+endif
+
+" 一键更新ctags & cscope..
+if a:cmd == 50
+    " exec g:ctag_execcmd
+    " cs kill -1
+    " exec g:cscope_cmd
     return
 endif
 
@@ -298,17 +306,16 @@ if a:cmd == 51
     let t1 = localtime() 
     let db = system("~/.vim/shell/cscope.sh " . shellescape(expand('%:p')))
     let path = strpart(db, 0, match(db, "cscope.out")) " 必须这样截取,否则多余的结束符^@会导致cs add 异常. 
-    let cmd = "cs add " . path . "cscope.out"
-    echo "path:" path
-    echo "cmd:" cmd
+    let g:cscope_cmd = "cs add " . path . "cscope.out"
+    echo g:cscope_cmd
     cs kill -1
-    " cs reset
-    exec cmd
+    exec g:cscope_cmd
     let t2 = localtime()
-    echo "escape time:" (t2 - t2)"s"
+    echo "escape time:" (t2 - t1)"s"
     return
 endif
 
+" 监听执行命令
 if a:cmd == 52
     " let cwd = getcwd()
     " echo "cwd:" cwd
