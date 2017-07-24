@@ -3,9 +3,9 @@
 sourcepath=$PWD
 temp=$sourcepath
 
-find ./ -name "*.c" -o -name "*.h" -o -name "*.cpp" -o -name "*.cc" -o -name "*.java" -o -name "Makefile" -o -name "*.mk" -o -name "Kconfig" -o -name "*config" -o -name "*.dts" -o -name "*.xml" -o -name "*.sh" >./cscope.files
+find $PWD -name "*.c" -o -name "*.h" -o -name "*.cpp" -o -name "*.cc" -o -name "*.java" -o -name "Makefile" -o -name "*.mk" -o -name "Kconfig" -o -name "*config" -o -name "*.dts" -o -name "*.xml" -o -name "*.sh" >./cscope.files
 
-cscope -Rbq
+cscope -Rbq -i cscope.files >/dev/null 2>&1
 
 tagpath=~/.ctags/${temp//"/"/"_"}
 
@@ -20,7 +20,7 @@ cd $tagpath
 #ctags -R $sourcepath >/dev/null 2>&1
 
 export CSCOPE_DB=$tagpath/cscope.out
-source ~/.bashrc
-echo $tagpath/cscope.out
+
+echo $CSCOPE_DB
 
 exit 0

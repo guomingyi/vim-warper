@@ -124,6 +124,9 @@ if argc() == 0 && !exists("s:std_in")
 "    autocmd VimEnter * WMToggle
 endif
 
+
+autocmd BufNewFile * call UserFunctionSwitch(52)
+
 "##################################################################[ctags]
 " Press F5 to update make ctags.
 " cd ~/.ctags
@@ -181,7 +184,6 @@ nmap <silent> <F4> : exec "CtrlP ." <CR>
 "make source tags
 nmap <silent> <F5> : call UserFunctionSwitch(5) <CR>
 nmap <silent> <Leader><F5> : call UserFunctionSwitch(51) <CR>
-" nmap <silent> <Leader><F9> : exec "cscope add " . g:ctags <space>
 
 "miniBuf
 nmap <silent> <Leader><F6> : call UserFunctionSwitch(70) <CR>
@@ -205,13 +207,19 @@ nmap <Leader>qa : qall <CR>
 
 " quit all & save session.vim.
 nmap <F12> : call UserFunctionSwitch(30) <CR>
+nmap <Leader>qs : call UserFunctionSwitch(30) <cr>
 nmap <Leader>wq : wq <CR>
 nmap <Leader>w : w <CR>
-
 nmap <Leader>rn : %s/\r//g <CR> "替换^Ｍ
-
-
 nmap <Leader>rs : call LeaveHandler() <Space> 
+
+" cscope
+nmap cc : cscope find c <Space>
+nmap cd : cscope find d <Space>
+nmap cf : cscope find f <Space>
+nmap cg : cscope find g <Space>
+nmap cs : cscope find s <Space>
+nmap ct : cscope find t <Space>
 "##################################################################[function]
 let g:userFuncSwitch = 1
 let g:line_number_show = 0
@@ -287,19 +295,26 @@ endif
 
 if a:cmd == 51
     echo "Start make cscope.."
-    let g:time1 = localtime() 
-    let g:ctags = system("~/.vim/shell/cscope.sh " . shellescape(expand('%:p')))
-    let g:cscope = substitute(g:ctags, "^@", "", "g")
-    echo g:cscope
-    echo "CSCOPE_DB:" $CSCOPE_DB 
-    let execcmd = "cs add ~/.ctags/cscope.out"
-     " let execcmd = "cscope add " . g:cscope
+    let t1 = localtime() 
+    let db = system("~/.vim/shell/cscope.sh " . shellescape(expand('%:p')))
+    let path = strpart(db, 0, match(db, "cscope.out")) " 必须这样截取,否则多余的结束符^@会导致cs add 异常. 
+    let cmd = "cs add " . path . "cscope.out"
+    echo "path:" path
+    echo "cmd:" cmd
     cs kill -1
-    exec execcmd
-    let g:time2 = localtime()
-    echo "escape time:" (g:time2 - g:time1)"s"
+    " cs reset
+    exec cmd
+    let t2 = localtime()
+    echo "escape time:" (t2 - t2)"s"
     return
 endif
+
+if a:cmd == 52
+    " let cwd = getcwd()
+    " echo "cwd:" cwd
+    return
+endif
+
 
 if a:cmd == 6
 
@@ -432,17 +447,18 @@ let Tlist_Auto_Open = 0
 " 其他功能可输入：help cscope查看
 
 if has("cscope")
-    set csprg=/usr/bin/cscope
+    " set csprg=/usr/bin/cscope
+    set csprg=cscope
     set csto=1
     set cst
     set nocsverb
     " add any database in current directory
-    if filereadable("cscope.out")
-        cs add cscope.out
+    " if filereadable("cscope.out")
+        " cs add cscope.out
         " else add database pointed to by environment
-    elseif $CSCOPE_DB != ""
-        cs add $CSCOPE_DB
-    endif
+    " elseif $CSCOPE_DB != ""
+        " cs add $CSCOPE_DB
+    " endif
     set csverb
 endif
 
@@ -563,10 +579,13 @@ if(expand(g:AutoSessionFile) == findfile(expand(g:AutoSessionFile)))
 endif
 
 let g:AutoCscopeFile = g:Newpwd . "/cscope.out"
-" echo g:AutoCscopeFile
 if(expand(g:AutoCscopeFile) == findfile(expand(g:AutoCscopeFile)))
-    silent :!~/.vim/shell/copy.sh
-    au VimEnter * cs add ~/.ctags/cscope.out
+    " 必须这样截取,否则多余的结束符^@会导致cs add 异常. 
+    let path = strpart(g:AutoCscopeFile, 0, match(g:AutoCscopeFile, "cscope.out")) 
+    let cmd = "cs add " . path . "cscope.out"
+    " echo "path:" path
+    " echo "cmd:" cmd
+    silent: exec cmd
 endif
 
 au VimLeave * call LeaveHandler()
@@ -579,33 +598,6 @@ function! LeaveHandler()
     else
         echo "exit but no save session.vim"
     endif
-endfunction
-
-function! MyTabLine()
-          let s = ''
-          for i in range(tabpagenr('$'))
-            " select the highlighting
-            if i + 1 == tabpagenr()
-              let s .= '%#TabLineSel#'
-            else
-              let s .= '%#TabLine#'
-            endif
-
-            " set the tab page number (for mouse clicks)
-            let s .= '%' . (i + 1) . 'T'
-
-            " the label is made by MyTabLabel()
-            let s .= ' %{MyTabLabel(' . (i + 1) . ')} '
-          endfor
-        " after the last tab fill with TabLineFill and reset tab page nr
-          let s .= '%#TabLineFill#%T'
-
-          " right-align the label to close the current tab page
-          if tabpagenr('$') > 1
-            let s .= '%=%#TabLine#%999Xclose'
-          endif
-          echo s
-          return s
 endfunction
 
 
