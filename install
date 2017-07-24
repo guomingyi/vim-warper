@@ -3,10 +3,11 @@
 
 echo Config vim ..
 
-rm -rf ~/.vim ~/.vimrc
+rm -rf ~/.vim ~/.vimrc ~/.agignore
 
 cp -a .vim ~/.vim
 cp -a .vimrc ~/.vimrc
+cp -a .agignore ~/.agignore
 
 echo "Done."
 

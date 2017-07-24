@@ -48,6 +48,9 @@ F2    同\qs
 \s    Ack 搜索,先按下\s,再输入需要搜索的字符,回车
 \f    AckFile搜索,同上
 
+# ag 搜索
+sudo apt-get install silversearcher-ag
+
 # Cscope相关:
 cc  搜索该函数调用的函数
 cd  搜索调用该函数的函数
