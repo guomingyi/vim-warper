@@ -6,6 +6,7 @@ set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 
 Plugin 'VundleVim/Vundle.vim'
+Plugin 'tacahiroy/ctrlp-funky'
 Plugin 'tpope/vim-fugitive'
 Plugin 'vim-scripts/winmanager'
 Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
@@ -87,6 +88,7 @@ set ignorecase "搜索忽略大小写
 
 set foldmethod=syntax "使用语法高亮定义代码折叠: zc 折叠, zo 展开
 set foldlevelstart=99 "打开文件是默认不折叠代码
+set fdm=indent 
 
 "set mouse= "鼠标默认值
 "set number "显示行号
@@ -177,7 +179,10 @@ nmap <silent> <Leader><F3> : call UserFunctionSwitch(2) <CR>
 nmap <silent> <F3> : call UserFunctionSwitch(3) <CR>
 
 "mru, file open history record
-nmap <silent> <Leader><F4> : call UserFunctionSwitch(4) <CR>
+" nmap <silent> <Leader><F4> : call UserFunctionSwitch(4) <CR>
+" ctrlpFunky
+nmap <silent> <Leader><F4> : exec 'CtrlPFunky' <CR>
+nmap <silent> <Leader>fu : exec 'CtrlPFunky ' . expand('<cword>') <CR>
 "file search
 nmap <silent> <F4> : exec "CtrlP ." <CR>
 
@@ -189,6 +194,7 @@ nmap <silent> <Leader><F5> : call UserFunctionSwitch(51) <CR>
 nmap <silent> <Leader><F6> : call UserFunctionSwitch(70) <CR>
 "buf exploler
 nmap <silent> <F6> : call UserFunctionSwitch(7) <CR>
+nmap <silent> 9 : call UserFunctionSwitch(7) <CR>
 
 "quickfix 
 nmap <silent> <F7> : call UserFunctionSwitch(8) <CR>
@@ -198,6 +204,7 @@ nmap <silent> <F7> : call UserFunctionSwitch(8) <CR>
 nmap <silent> <Leader><F7> : call UserFunctionSwitch(6) <CR>
 
 nmap <silent> <F8> : call UserFunctionSwitch(50) <CR>
+nmap <silent> <F9> : :w <CR>
 
 "ack search file & symbols
 nmap <Leader>s : Ack <Space>
@@ -205,11 +212,18 @@ nmap <Leader>f : AckFile <Space>
 nmap <Leader>q : q <CR>
 nmap <Leader>qa : qall <CR>
 
+" ag
+
+nmap :ag : Ag -i <Space>
+nmap :af : AgFile -i <Space>
+
 " quit all & save session.vim.
 nmap <F12> : call UserFunctionSwitch(30) <CR>
-nmap <Leader>qs : call UserFunctionSwitch(30) <cr>
+nmap :qs : call UserFunctionSwitch(30) <cr>
 nmap <Leader>wq : wq <CR>
 nmap <Leader>w : w <CR>
+nmap :W : w <CR>
+imap :w : :w <CR>
 nmap <Leader>rn : %s/\r//g <CR> "替换^Ｍ
 nmap <Leader>rs : call LeaveHandler() <Space> 
 
@@ -491,7 +505,8 @@ let g:ctrlp_show_hidden = 0
 " sudo apt-get install silversearcher-ag
 " when use ag ,add custom ignore to : ~/.agignore
 if executable('ag')
-    let g:ctrlp_use_caching = 0
+    let g:ag_highlight=1
+    let g:ctrlp_use_caching = 1
     set grepprg=ag\ --nogroup\ --nocolor
     let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden -g ""'
 else
@@ -507,6 +522,12 @@ endif
 let g:ctrlp_clear_cache_on_exit = 0
 let g:ctrlp_max_depth = 100
 let g:ctrlp_max_files = 5000000
+
+
+" ctrlpFunky
+let g:ctrlp_funky_syntax_highlight = 1
+let g:ctrlp_funky_use_cache = 1
+let g:ctrlp_funky_nolim = 1
 "##################################################################[winManager]
 let g:NERDTree_title="[NERDTree]"  
 let g:winManagerWindowLayout='NERDTree'
