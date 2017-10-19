@@ -106,6 +106,12 @@ if has("autocmd")
     au InsertEnter * silent execute "!gconftool-2 --type string --set /apps/gnome-terminal/profiles/Default/cursor_shape ibeam"  
     au InsertLeave * silent execute "!gconftool-2 --type string --set /apps/gnome-terminal/profiles/Default/cursor_shape block"  
     au VimLeave * silent execute "!gconftool-2 --type string --set /apps/gnome-terminal/profiles/Default/cursor_shape block" 
+
+    " autocmd BufNewFile,Bufread *.hal set syntax=help
+    au BufRead,BufNewFile *.hal set filetype=c 
+    au BufRead,BufNewFile *.bp set filetype=make 
+    au BufRead,BufNewFile *.txt set filetype=c 
+    au BufRead,BufNewFile *.log set filetype=c 
 endif 
 "##################################################################[auto exec cmds]
 "autocmd VimEnter * TagbarToggle "auto start cmd
@@ -506,7 +512,7 @@ let g:ctrlp_show_hidden = 0
 " when use ag ,add custom ignore to : ~/.agignore
 if executable('ag')
     let g:ag_highlight=1
-    let g:ctrlp_use_caching = 1
+    " let g:ctrlp_use_caching = 1
     set grepprg=ag\ --nogroup\ --nocolor
     let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden -g ""'
 else
