@@ -5,6 +5,7 @@ set rtp+=~/.vim/bundle/Vundle.vim
 
 call vundle#begin()
 
+" Plugin 'Yggdroot/LeaderF'
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'tacahiroy/ctrlp-funky'
 Plugin 'tpope/vim-fugitive'
@@ -27,6 +28,7 @@ Plugin 'yegappan/mru'
 Plugin 'rking/ag.vim'
 Plugin 'altercation/vim-colors-solarized'
 
+Plugin 'fatih/vim-go'
 Plugin 'Lokaltog/vim-distinguished'
 
 "Plugin 'Valloric/YouCompleteMe' "NEED VIM8.0+ & PYTHON3.5+ support.
@@ -109,7 +111,7 @@ if has("autocmd")
 
     " autocmd BufNewFile,Bufread *.hal set syntax=help
     au BufRead,BufNewFile *.hal set filetype=c 
-    au BufRead,BufNewFile *.bp set filetype=make 
+    au BufRead,BufNewFile *.bp set filetype=c 
     au BufRead,BufNewFile *.txt set filetype=c 
     au BufRead,BufNewFile *.log set filetype=c 
 endif 
@@ -159,6 +161,7 @@ if (expand(g:argv) == expand("clean"))
     silent :!~/.vim/shell/del.sh
 endif
 
+
 "##################################################################[key map]
 nmap 1 : bp <cr>
 nmap 2 : bn <cr>
@@ -169,6 +172,7 @@ nmap 3 : cn <cr>
 nmap 4 : cp <cr>
 
 nmap 5 <C-]>
+nmap <silent> <F5> <C-o>
 
 nmap 6 <C-o>
 
@@ -193,8 +197,8 @@ nmap <silent> <Leader>fu : exec 'CtrlPFunky ' . expand('<cword>') <CR>
 nmap <silent> <F4> : exec "CtrlP ." <CR>
 
 "make source tags
-nmap <silent> <F5> : call UserFunctionSwitch(5) <CR>
-nmap <silent> <Leader><F5> : call UserFunctionSwitch(51) <CR>
+nmap <silent> <Leader><F5> : call UserFunctionSwitch(5) <CR>
+" nmap <silent> <Leader><F5> : call UserFunctionSwitch(51) <CR>
 
 "miniBuf
 nmap <silent> <Leader><F6> : call UserFunctionSwitch(70) <CR>
@@ -309,7 +313,7 @@ if a:cmd == 5
     let g:ctag_execcmd = "set tags+=" . g:ctags
     exec g:ctag_execcmd
     let g:time2 = localtime()
-    echo g:ctag_execcmd "escape time:" (g:time2 - g:time1)"s"
+    " echo g:ctag_execcmd "escape time:" (g:time2 - g:time1)"s"
     return
 endif
 
@@ -489,6 +493,7 @@ if has("cscope")
     set csverb
 endif
 
+" set rtp+=~/.vim/bundle/vim-go
 "##################################################################[Ctrlp]
 set rtp+=~/.vim/bundle/ctrlp.vim
 :helptags ~/.vim/bundle/ctrlp.vim/doc
@@ -512,7 +517,7 @@ let g:ctrlp_show_hidden = 0
 " when use ag ,add custom ignore to : ~/.agignore
 if executable('ag')
     let g:ag_highlight=1
-    " let g:ctrlp_use_caching = 1
+    let g:ctrlp_use_caching = 1
     set grepprg=ag\ --nogroup\ --nocolor
     let g:ctrlp_user_command = 'ag %s -l --nocolor --hidden -g ""'
 else
@@ -525,8 +530,8 @@ endif
 
 " echo "g:ctrlp_user_command :" g:ctrlp_user_command
 
-let g:ctrlp_clear_cache_on_exit = 0
-let g:ctrlp_max_depth = 100
+let g:ctrlp_clear_cache_on_exit = 1
+let g:ctrlp_max_depth = 1000
 let g:ctrlp_max_files = 5000000
 
 
