@@ -41,7 +41,7 @@ filetype plugin indent on
 set modelines=0
 set backspace=2 "设置更好的删除
 syntax on "语法高亮
-"set noswapfile
+set noswapfile
 "autocmd InsertLeave * se nocul "用浅色高亮当前行
 "autocmd InsertEnter * se cul
 set cul
