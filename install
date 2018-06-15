@@ -1,5 +1,10 @@
 #!/bin/bash
 
+sudo apt-get install silversearcher-ag 
+sudo apt-get install ctags
+sudo apt-get install -y libncurses5-dev
+sudo apt install gconf-editor
+
 
 echo Config vim ..
 
@@ -9,5 +14,19 @@ cp -a .vim ~/.vim
 cp -a .vimrc ~/.vimrc
 cp -a .agignore ~/.agignore
 
+wget https://github.com/vim/vim/archive/v7.4.2367.tar.gz    
+tar zxvf v7.4.2367.tar.gz  
+cd vim-7.4.2367/src/
+
+sudo make && sudo make install
+
+sudo cp vim /usr/local/bin/vim
+
+
+
+
 echo "Done."
+
+
+
 
