@@ -1,9 +1,9 @@
 #!/bin/bash
 
-sudo apt-get install silversearcher-ag 
-sudo apt-get install ctags
+sudo apt-get install -y silversearcher-ag 
+sudo apt-get install -y ctags
 sudo apt-get install -y libncurses5-dev
-sudo apt install gconf-editor
+sudo apt install -y gconf-editor
 
 
 echo Config vim ..
